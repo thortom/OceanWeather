@@ -1,0 +1,28 @@
+﻿body
+    {
+
+    }
+
+#logoMarorka
+    {
+        float: left;
+
+    }
+
+#variablesList
+    {
+        margin-left: 5%;
+        margin-top: 10%;
+    }
+
+#columnLeft
+    {
+        float: left;
+        width: 60%;
+    }
+
+#columnRight
+    {
+        float: left;
+        width: 40%;
+    }

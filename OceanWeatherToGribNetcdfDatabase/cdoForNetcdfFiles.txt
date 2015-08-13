@@ -1,0 +1,54 @@
+# Fixing for database
+    cdo select,level=0 archv.2015_001_00_3zu.nc atLevel0.nc                 # Took 4sek for 2GB file
+
+    # Use this
+    cdo -f grb2 setgridtype,unstructured atLevel0.nc atLevel0Unstruct.grb2
+    # Or this
+    cdo -f grb2 copy atLevel0.nc atLevel0.grb2                              # this gives Warning (gribapiDefGrid) : Curvilinear grids are unsupported in                                                                      # GRIB format! Created wrong GDS!
+
+
+#other interesting operations
+    cdo remapbil,201102.grb2 -setgrid,201102.nc 201102.grb2 ofile.grb2      # Took 2hrs for 2GB file
+
+    cdo sellonlatbox,lon1,lon2,lat1,lat2  ifile ofile
+
+    cdo remapnn,lon=20.5/lat=42.5 ifile ofile                               # can be used for interpolation of desired area
+    cdo griddes multi_1.glo_30m.tp.201101.grb2                              # gets the grid description
+
+# Retrieve specifix data box from database
+    cdo selyear,2011 -selmon,02 -selday,26  multi_1.glo_30m.dp.201102.grb2 out.grb2
+    cdo sellonlatbox,20,25,20,25 out.grb2 outBox.grb2
+
+    #Takes less time if combined
+    cdo sellonlatbox,20,25,20,25 -selyear,2011 -selmon,02 -selday,26 multi_1.glo_30m.dp.201102.grb2 out.grb2
+
+    #The mergetime opperation is time comsuming
+    cdo sellonlatbox,20,22,20,22 -selyear,2011 -selday,01 -mergetime 'multi_1*.grb2' out.grb2       # Takes 20sek
+
+    cdo mergetime -sellonlatbox,20,22,20,22 -selyear,2011 -selday,01/03 multi_1.glo_30m.*.201101.grb2 -sellonlatbox,20,22,20,22 -selyear,2011 -selday,01/03 multi_1.glo_30m.*.201102.grb2 -sellonlatbox,20,22,20,22 -selyear,2011 -selday,01/03 multi_1.glo_30m.*.201103.grb2 out.grb2
+
+#Assume three datasets with the same number of timesteps and different variables in each dataset. To merge these datasets to a new dataset use:
+    cdo merge ifile1 ifile2 ifile3 ofile
+
+lon1 - FLOAT Western longitude
+lon2 - FLOAT Eastern longitude
+lat1 - FLOAT Southern or northern latitude
+lat2 - FLOAT Northern or southern latitude
+
+# CDO Reference Card
+    http://www2.uah.es/clima/staff/gianni/doc/practicas/Extra/cdo_refcard.pdf
+
+$ cdo sellonlatbox,20,22,20,22 -selyear,2011 -selday,01/03 *.201101.grb2 out.grb2
+
+
+# To change NetCDF to Grib2
+    cdo chname,salinity,s 2011-01_salinity.nc 2011-01_s.nc                  # list of shortNames for Grib2 http://old.ecmwf.int/publications/manuals/d/gribapi/param/order=paramId/order_type=asc/p=9/search=salinity/
+    cdo -f grb2 setgridtype,unstructured 2011-01_s.nc 2011-01.grb2
+
+# To change Grib2 to CSV
+    # Old way: degrib 2011-01.grb2 -C -msg all -nMet -Csv
+    cdo -f nc copy stuff.grb2 stuff.nc
+    sds copy stuff.nc stuff.csv                                             # https://sds.codeplex.com/discussions/255032
+                                                                            # check the csv part out http://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/tricks.wgrib2
+
+    # use http://www.narccap.ucar.edu/data/ascii-howto.html fan-prebuilt
