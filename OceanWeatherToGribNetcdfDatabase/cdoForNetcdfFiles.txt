@@ -52,3 +52,6 @@ $ cdo sellonlatbox,20,22,20,22 -selyear,2011 -selday,01/03 *.201101.grb2 out.grb
                                                                             # check the csv part out http://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/tricks.wgrib2
 
     # use http://www.narccap.ucar.edu/data/ascii-howto.html fan-prebuilt
+
+# Get the nearest grib point
+    cdo remapnn,lon=10.55_lat=40.64 ifile ofile                             # https://code.zmaw.de/boards/1/topics/2482
